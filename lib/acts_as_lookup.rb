@@ -14,7 +14,7 @@ module RPH
         
         options = {
           :default_text => '--',
-          :order        => "#{field_to_select.to_s}"
+          :order => "#{field_to_select.to_s}"
         }.merge!(optionz)
       
         class_inheritable_accessor :options, :field_to_select
@@ -64,14 +64,14 @@ module RPH
       end
     end
     
-    # error module to handle plugin specific errors
+    # error module to raise plugin specific errors
     module Error
       class CustomError < RuntimeError
-        # getter/setter for setting custom error messages
         def self.message(msg=nil); msg.nil? ? @message : self.message = msg; end
         def self.message=(msg); @message = msg; end
       end
       
+      # custom error classes
       class InvalidAttr < CustomError
         message "attr passed to `acts_as_lookup' does not exist"; end
       class InvalidLookup < CustomError
