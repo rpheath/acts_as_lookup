@@ -38,7 +38,7 @@ Here's how you might use this in a typical form, where a Product has a Category.
 
 <pre><code>
 <% form_for @product do |f| -%>
-  <p>Project Title:
+  <p>Product Title:
     <%= f.text_field :title -%></p>
   
   <p>Choose Category:
