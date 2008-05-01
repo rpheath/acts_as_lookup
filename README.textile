@@ -1,0 +1,5 @@
+h1. ActsAsLookup
+
+Coming soon...
+
+Copyright (c) 2008 Ryan Heath, released under the MIT license
