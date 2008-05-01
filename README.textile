@@ -12,7 +12,7 @@ You can install this as a plugin. Navigate to your project root and type:
 
 <pre><code>git clone git://github.com/rpheath/acts_as_lookup.git vendor/plugins/acts_as_lookup</code></pre>
 
-After the installation, you’re good to go.
+Then you'll be able to tell your models to start acting like a lookup table.
 
 h2. The "Let me see an example or two"
 
