@@ -6,7 +6,6 @@ module RPH
     
     module ActMethods
       def acts_as_lookup(field_to_select, optionz={})
-        raise(Error::InvalidParams, Error::InvalidParams.message) if field_to_select.blank?
         raise(Error::InvalidAttr, Error::InvalidAttr.message) unless self.new.respond_to?(field_to_select)
         
         options = {
@@ -48,9 +47,6 @@ module RPH
         def self.message=(msg); @message = msg; end
       end
 
-      class InvalidParams < CustomError
-        message "must pass an attr to `acts_as_lookup' for the selection list (i.e. acts_as_lookup :title)"
-      end
       class InvalidAttr < CustomError
         message "attr passed to `acts_as_lookup' does not exist"
       end
