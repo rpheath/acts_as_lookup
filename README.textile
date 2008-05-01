@@ -74,7 +74,7 @@ h4. Changing the default text
 
 <pre></code>
 class Category < ActiveRecord::Base
-  acts_as_lookup :name, :default_text => "-- Choose Category --"
+  acts_as_lookup :name, :default_text => "- Choose Category -"
 end
 </code></pre>
 
@@ -97,7 +97,7 @@ class Category < ActiveRecord::Base
 end
 </code></pre>
 
-And of course, you could pass all options at once. I've just shown them separately to focus on each point.
+And of course, you could pass all options at once. I've just shown them separately to focus on each point. Enjoy.
 
 h2. License
 
