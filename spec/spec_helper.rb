@@ -5,6 +5,7 @@ require 'active_support'
 require File.join(File.dirname(__FILE__), "../lib/acts_as_lookup")
 
 ActionView::Base.send(:include, RPH::ActsAsLookup::ViewHelpers)
+ActionView::Helpers::FormBuilder.send(:include, RPH::ActsAsLookup::ViewHelpers::FormBuilder)
 
 class HashWithIndifferentAccess
   # override #id explicitly to alleviate

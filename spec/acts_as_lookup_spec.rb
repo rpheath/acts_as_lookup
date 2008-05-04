@@ -8,7 +8,7 @@ class Other < MockAR::Base
   acts_as_lookup :title, :default_text => '-- Choose --', :conditions => 'id <> 3', :order => 'id DESC'
 end
 
-describe "ActsAsLookup Plugin" do
+describe "ActsAsLookup" do
   E = RPH::ActsAsLookup::Error
   
   before(:each) do
@@ -72,8 +72,12 @@ describe "ActsAsLookup Plugin" do
   describe "Views" do
     include ActionView::Helpers::FormOptionsHelper
     
-    it "should respond to `lookup_for'" do
+    it "should respond to `lookup_for' as a helper" do
       ActionView::Base.new.should respond_to(:lookup_for)
+    end
+    
+    it "should respond to `lookup_for' from a FormBuilder" do
+      ActionView::Helpers::FormBuilder.new(nil, nil, nil, nil, nil).should respond_to(:lookup_for)
     end
     
     it "`lookup_for' should act the same as regular select" do
