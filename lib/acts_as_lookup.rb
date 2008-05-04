@@ -45,8 +45,8 @@ module RPH
       # html_options - same html_options allowed by the select tag
       #
       # Example:
-      #   <% form_for :project do |f| -%>
-      #     Title: <%= f.text_field :title -%>
+      #   <% form_tag :url => project_path(@project) do -%>
+      #     Title: <%= text_field :project, :title -%>
       #     Category: <%= lookup_for :project, :category_id -%>
       #   <% end -%>
       #
@@ -61,6 +61,19 @@ module RPH
         end
         raise(Error::InvalidLookup, Error::InvalidLookup.message) unless klass && klass.respond_to?(:field_to_select) && klass.respond_to?(:options_for_select)
         select(obj.to_sym, f_key.to_sym, klass.options_for_select, options, html_options)
+      end
+      
+      # allows `lookup_for' to be used with the
+      # <% form_for @object do |f| %> syntax
+      module FormBuilder
+        # Example:
+        #   <% form_for :project do |f| -%>
+        #     Title: <%= f.text_field :title -%>
+        #     Category: <%= f.lookup_for :category_id -%>
+        #   <% end -%>
+        def lookup_for(f_key, options={}, html_options={})
+          @template.lookup_for(@object_name, f_key, options.merge(:object => @object), html_options)
+        end
       end
     end
     
