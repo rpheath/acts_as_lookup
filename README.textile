@@ -66,6 +66,15 @@ Another option for automatically generating the drop down is by using the @looku
 
 The first parameter is the object with which this lookup gets associated, and the second is the foreign key for the association. One thing to note, though: the foreign key _must_ follow the traditional Rails convention for foreign keys. Meaning, for a Category, you'd have category_id; for a Task, you'd have task_id; and so on. The reason is because the plugin uses that foreign key to get at the Model in which it represents. But since that's pretty standard to most Rails developers, I don't think it bears too much constraint :-)
 
+And of course, you can also use this helper alongside of your other FormBuilder helpers (read: you can do @f.lookup_for...@):
+
+<pre><code>
+<% form_for @product do |f| -%>
+  Title:    <%= f.text_field :title -%>
+  Category: <%= f.lookup_for :category_id -%>
+<% end -%>
+</code></pre>
+
 h3. Example 3: Customization
 
 If you've read this far, you may be asking "what if I don't want '--' as my default option?" or "what if I don't want _every_ category to show up?" or "what if I have a category order, other than alphabetical?". No problem.
