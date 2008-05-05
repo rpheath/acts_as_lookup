@@ -87,6 +87,14 @@ class Category < ActiveRecord::Base
 end
 </code></pre>
 
+And if you don't want a default @nil@ option at all, just set the @:default_text@ to @:first@ (meaning the first item in the options list):
+
+<pre></code>
+class Category < ActiveRecord::Base
+  acts_as_lookup :name, :default_text => :first
+end
+</pre></code>
+
 h4. Limiting the options
 
 <pre></code>
