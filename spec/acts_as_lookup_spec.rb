@@ -1,70 +1,82 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
-class TestModel < MockAR::Base
+class Basic < MockAR::Base
   acts_as_lookup :title
 end
 
-class Other < MockAR::Base
+class Customized < MockAR::Base
   acts_as_lookup :title, :default_text => '-- Choose --', :conditions => 'id <> 3', :order => 'id DESC'
+end
+
+class DefaultToFirstOption < MockAR::Base
+  acts_as_lookup :title, :default_text => :first
 end
 
 describe "ActsAsLookup" do
   E = RPH::ActsAsLookup::Error
   
   before(:each) do
-    @tm = TestModel
+    @basic = Basic
   end
   
   describe "Models" do
     it "should respond to `acts_as_lookup'" do
-      @tm.should respond_to(:acts_as_lookup)
+      @basic.should respond_to(:acts_as_lookup)
     end
   
     it "should respond to `options_for_select'" do
-      @tm.should respond_to(:options_for_select)
+      @basic.should respond_to(:options_for_select)
+    end
+    
+    it "should have 4 items in the array" do
+      @basic.options_for_select.size.should eql(4)
     end
     
     it "should respond to `field_to_select'" do
-      @tm.should respond_to(:field_to_select)
+      @basic.should respond_to(:field_to_select)
     end
     
     it "should have field_to_select set to 'title'" do
-      @tm.field_to_select.should eql(:title)
+      @basic.field_to_select.should eql(:title)
     end
     
     describe "default options" do
       it "should have no conditions by default" do
-        @tm.options[:conditions].should be_nil
+        @basic.options[:conditions].should be_nil
       end
       
       it "should have default text of '--' for first select item" do
-        @tm.options[:default_text].should_not be_nil
-        @tm.options[:default_text].should eql('--')
+        @basic.options[:default_text].should_not be_nil
+        @basic.options[:default_text].should eql('--')
       end
     
       it "should have default order of field_to_select (for alphabetical list)" do
-        @tm.options[:order].should_not be_nil
-        @tm.options[:order].should eql(@tm.field_to_select.to_s)
+        @basic.options[:order].should_not be_nil
+        @basic.options[:order].should eql(@basic.field_to_select.to_s)
       end
     end
     
     describe "customization" do      
       before(:each) do
-        @other = Other
+        @customized = Customized
       end
       
       it "should support custom text for the first select entry" do
-        @other.options_for_select.first[0].should eql('-- Choose --')
+        @customized.options_for_select.first[0].should eql('-- Choose --')
       end
     
       it "should support custom conditions for SQL" do
-        @other.options[:conditions].should_not be_nil
-        @other.options[:conditions].should eql('id <> 3')
+        @customized.options[:conditions].should_not be_nil
+        @customized.options[:conditions].should eql('id <> 3')
       end
     
       it "should support custom order for SQL" do
-        @other.options[:order].should_not be_nil
-        @other.options[:order].should eql('id DESC')
+        @customized.options[:order].should_not be_nil
+        @customized.options[:order].should eql('id DESC')
+      end
+      
+      it "should not add the default 'nil' option if :default_text set to :first" do
+        DefaultToFirstOption.options_for_select.size.should eql(3)
       end
     end
   end
@@ -81,8 +93,8 @@ describe "ActsAsLookup" do
     end
     
     it "`lookup_for' should act the same as regular select" do
-      ActionView::Base.new.lookup_for(:other, :test_model_id).
-        should eql(select(:other, :test_model_id, TestModel.options_for_select))
+      ActionView::Base.new.lookup_for(:other, :basic_id).
+        should eql(select(:other, :basic_id, Basic.options_for_select))
     end
   end
   

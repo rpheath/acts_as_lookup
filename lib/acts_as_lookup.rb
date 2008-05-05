@@ -33,7 +33,8 @@ module RPH
       #   <%= f.select :category_id, Category.options_for_select -%>
       def options_for_select
         rows = self.find(:all, :conditions => (options[:conditions] || {}), :order => options[:order])
-        [[options[:default_text], nil]] + rows.collect { |r| [r.send(field_to_select), r.id] }
+        default_selection = (options[:default_text] == :first ? [] : [[options[:default_text], nil]])
+        default_selection + rows.collect { |r| [r.send(field_to_select), r.id] }
       end
     end
   
