@@ -51,12 +51,23 @@ module RPH
       #     Category: <%= lookup_for :project, :category_id -%>
       #   <% end -%>
       #
-      # Note: the `:category_id' field must follow the Rails convention for
-      #       foreign keys. From that, `lookup_for' will pull off the '_id'
-      #       part and collect all of the options from the corresponding Model
+      # Note: lookup_for will attempt to find the association that
+      #       uses the given foreign key +f_key+, but will fallback to 
+      #       classifying the +f_key+ by removing the _id portion
       def lookup_for(obj, f_key, options={}, html_options={})
+        object = options[:object] || instance_variable_get("@#{obj}")
+        klass  = nil
+        
+        # find association that matches the foreign key
+        object.class.reflect_on_all_associations.each do |reflection|
+          if reflection.options[:foreign_key] == f_key.to_s
+            klass = reflection.active_record
+            break
+          end  
+        end unless object.nil?
+        
         begin
-          klass = f_key.to_s.gsub(/_id$/, '').classify.constantize 
+          klass ||= f_key.to_s.gsub(/_id$/, '').classify.constantize 
         rescue NameError
           raise(Error::InvalidModel, Error::InvalidModel.message)
         end
