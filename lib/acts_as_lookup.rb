@@ -61,7 +61,7 @@ module RPH
         # find association that matches the foreign key
         object.class.reflect_on_all_associations.each do |reflection|
           if reflection.primary_key_name == f_key.to_s
-            klass = reflection.active_record
+            klass = reflection.class_name.constantize
             break
           end  
         end unless object.nil?
