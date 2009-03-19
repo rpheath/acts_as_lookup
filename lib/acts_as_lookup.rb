@@ -1,5 +1,20 @@
 module RPH
   module ActsAsLookup
+    module Error
+      class CustomError < RuntimeError
+        def self.message(msg=nil); msg.nil? ? @message : self.message = msg; end
+        def self.message=(msg); @message = msg; end
+      end
+      
+      # custom error classes
+      class InvalidAttr < CustomError
+        message "attr passed to `acts_as_lookup' does not exist"; end
+      class InvalidLookup < CustomError
+        message "model passed to `lookup_for' does not have the `act_as_lookup' declaration"; end
+      class InvalidModel < CustomError
+        message "model passed to `lookup_for' does not seem to exist"; end
+    end
+    
     def self.included(base)
       base.extend ActMethods
     end
@@ -9,19 +24,24 @@ module RPH
       #   class Category < ActiveRecord::Base
       #     acts_as_lookup :title
       #   end
+      #
+      #   class User < ActiveRecord::Base
+      #     acts_as_lookup [:first_name, :last_name]
+      #   end
       def acts_as_lookup(field_to_select, optionz={})
-        raise(Error::InvalidAttr, Error::InvalidAttr.message) unless self.new.respond_to?(field_to_select)
+        valid_attributes = [field_to_select].flatten.all? { |attr| self.new.respond_to?(attr) }
+        raise(Error::InvalidAttr, Error::InvalidAttr.message) unless valid_attributes
         
         options = {
           :default_text => '--',
-          :order => "#{field_to_select.to_s}"
+          :order => [field_to_select].flatten.compact.join(',')
         }.merge!(optionz)
       
-        class_inheritable_accessor :options, :field_to_select
+        class_inheritable_accessor :options, :field_to_select, :selection_text
         extend ClassMethods
       
         self.options = options
-        self.field_to_select = field_to_select.to_sym
+        self.field_to_select = field_to_select
       end
     end
   
@@ -34,7 +54,14 @@ module RPH
       def options_for_select
         rows = self.find(:all, :conditions => (options[:conditions] || {}), :order => options[:order])
         default_selection = (options[:default_text] == :first ? [] : [[options[:default_text], nil]])
-        default_selection + rows.collect { |r| [r.send(field_to_select), r.id] }
+        default_selection + rows.collect do |r| 
+          [
+            field_to_select.is_a?(Array) ? 
+              field_to_select.inject([]) { |attrs, attr| attrs << r.send(attr) }.compact.join(' ') : 
+                r.send(field_to_select), 
+            r.id
+          ]
+        end
       end
     end
   
@@ -71,7 +98,7 @@ module RPH
         rescue NameError
           raise(Error::InvalidModel, Error::InvalidModel.message)
         end
-        raise(Error::InvalidLookup, Error::InvalidLookup.message) unless klass && klass.respond_to?(:field_to_select) && klass.respond_to?(:options_for_select)
+        raise(Error::InvalidLookup, Error::InvalidLookup.message) unless klass && klass.respond_to?(:options_for_select)
         select(obj.to_sym, f_key.to_sym, klass.options_for_select, options, html_options)
       end
       
@@ -87,22 +114,6 @@ module RPH
           @template.lookup_for(@object_name, f_key, options.merge(:object => @object), html_options)
         end
       end
-    end
-    
-    # error module to raise plugin specific errors
-    module Error
-      class CustomError < RuntimeError
-        def self.message(msg=nil); msg.nil? ? @message : self.message = msg; end
-        def self.message=(msg); @message = msg; end
-      end
-      
-      # custom error classes
-      class InvalidAttr < CustomError
-        message "attr passed to `acts_as_lookup' does not exist"; end
-      class InvalidLookup < CustomError
-        message "model passed to `lookup_for' does not have the `act_as_lookup' declaration"; end
-      class InvalidModel < CustomError
-        message "model passed to `lookup_for' does not seem to exist"; end
     end
   end
 end

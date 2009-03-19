@@ -116,6 +116,16 @@ end
 
 And of course, you could pass all options at once. I've just shown them separately to focus on each point. Enjoy.
 
+h4. Multiple Fields
+
+Let's say you have 'first_name' and 'last_name' columns in your users table. You may want to display the full name in the selection box. Well, if you pass an array to the @acts_as_lookup@ helper, it will automatically construct the selection text. It also validates that each of the attrs exist, so make sure they do :-)
+
+<pre></code>
+class Category < ActiveRecord::Base
+  acts_as_lookup [:first_name, :last_name]
+end
+</pre></code>
+
 h2. License
 
 Copyright (c) 2008 Ryan Heath, released under the MIT license
